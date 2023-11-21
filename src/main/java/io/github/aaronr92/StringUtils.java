@@ -75,8 +75,10 @@ public class StringUtils {
             for (int j = 0; j < charSize; j++) {
                 byte bit = bits[i * charSize + j];
 
-                if (bit == 127)
+                if (bit == 127) {
+                    decodedByte = 32;
                     break;
+                }
 
                 decodedByte |= (byte) (bit << ((charSize - 1) - j));
             }
@@ -85,7 +87,7 @@ public class StringUtils {
         }
 
         try {
-            return new String(decodedBytes, encoding);
+            return new String(decodedBytes, encoding).trim();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

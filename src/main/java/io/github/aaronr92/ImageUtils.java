@@ -9,6 +9,7 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 
 public class ImageUtils {
 
@@ -48,20 +49,6 @@ public class ImageUtils {
         return imageBuilder.getBufferedImage();
     }
 
-    public static BufferedImage drawImage(int width, int height) {
-        ImageBuilder imageBuilder = new ImageBuilder(width, height, false);
-
-        // Filling each pixel
-        for (int x = 0; x < width; x++) {
-            for (int y = 0; y < height; y++) {
-                int color = (x + y) % 2 == 0 ? BLACK : WHITE;
-                imageBuilder.setRGB(x, y, color);
-            }
-        }
-
-        return imageBuilder.getBufferedImage();
-    }
-
     public static void saveImage(BufferedImage image, String filename)
             throws IOException {
         var file = new File(filename);
@@ -72,7 +59,7 @@ public class ImageUtils {
         System.out.printf("Path [%s]\n", file.getAbsolutePath());
     }
 
-    public static byte[] readSquareImageData(String path)
+    public static byte[] readSquareImageData(String path, int pixelSize)
             throws IOException, ImageReadException {
         File imageFile = new File(path);
 
@@ -86,18 +73,30 @@ public class ImageUtils {
         var image = parser.getBufferedImage(imageFile, new PngImagingParameters());
         int sideSize = image.getWidth();
 
-        byte[] rawPixelData = new byte[sideSize * sideSize];
+        int preciseSideSize = (int) Math.ceil(((double) sideSize / pixelSize));
 
-        for (int y = 0; y < sideSize; y++) {
-            for (int x = 0; x < sideSize; x++) {
+        byte[] rawPixelData = new byte[preciseSideSize * preciseSideSize];
+
+        int aY = 0;
+
+        for (int y = 0; y < sideSize; y += pixelSize) {
+            int aX = 0;
+            for (int x = 0; x < sideSize; x += pixelSize) {
                 int pixel = image.getRGB(x, y);
 
                 if (pixel == WHITE)
-                    rawPixelData[y * sideSize + x] = 0;
+                    rawPixelData[aY * preciseSideSize + aX] = 0;
                 else if (pixel == BLACK)
-                    rawPixelData[y * sideSize + x] = 1;
+                    rawPixelData[aY * preciseSideSize + aX] = 1;
+                else
+                    rawPixelData[aY * preciseSideSize + aX] = 127;
+
+                aX++;
             }
+            aY++;
         }
+
+        System.out.println(Arrays.toString(rawPixelData));
 
         return rawPixelData;
     }
