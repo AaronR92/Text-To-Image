@@ -9,6 +9,50 @@ import java.io.IOException;
 
 public class ImageUtils {
 
+    public static BufferedImage drawSquareImage(byte[] text) {
+        return drawSquareImage(text, 1);
+    }
+
+    public static BufferedImage drawSquareImage(byte[] text, int pixelSize) {
+        int sideSize = (int) (
+                Math.ceil(Math.sqrt(text.length)) * pixelSize
+        );
+
+        ImageBuilder imageBuilder = new ImageBuilder(
+                sideSize,
+                sideSize,
+                false
+        );
+
+        int i = 0;
+
+        try {
+            for (int y = 0; y < sideSize; y += pixelSize) {
+                for (int x = 0; x < sideSize; x += pixelSize) {
+                    int pixel = text[i] == 0 ? 0xFFFFFF : 0x000000;
+                    drawPixel(imageBuilder, pixel, pixelSize, x, y);
+                    i++;
+                }
+            }
+        } catch (ArrayIndexOutOfBoundsException ignored) {}
+
+        return imageBuilder.getBufferedImage();
+    }
+
+    private static void drawPixel(
+            ImageBuilder imageBuilder,
+            int color,
+            int pixelSize,
+            int startingX,
+            int startingY
+    ) {
+        for (int y = startingY; y < pixelSize + startingY; y++) {
+            for (int x = startingX; x < pixelSize + startingX; x++) {
+                imageBuilder.setRGB(x, y, color);
+            }
+        }
+    }
+
     public static BufferedImage drawImage(int width, int height) {
         ImageBuilder imageBuilder = new ImageBuilder(width, height, false);
 
