@@ -39,20 +39,6 @@ public class ImageUtils {
         return imageBuilder.getBufferedImage();
     }
 
-    private static void drawPixel(
-            ImageBuilder imageBuilder,
-            int color,
-            int pixelSize,
-            int startingX,
-            int startingY
-    ) {
-        for (int y = startingY; y < pixelSize + startingY; y++) {
-            for (int x = startingX; x < pixelSize + startingX; x++) {
-                imageBuilder.setRGB(x, y, color);
-            }
-        }
-    }
-
     public static BufferedImage drawImage(int width, int height) {
         ImageBuilder imageBuilder = new ImageBuilder(width, height, false);
 
@@ -74,7 +60,21 @@ public class ImageUtils {
         ImageIO.write(image, "png", file);
 
         System.out.println("Image was saved successfully!");
-        System.out.printf("Path [%s]", file.getAbsolutePath());
+        System.out.printf("Path [%s]\n", file.getAbsolutePath());
+    }
+
+    private static void drawPixel(
+            ImageBuilder imageBuilder,
+            int color,
+            int pixelSize,
+            int startingX,
+            int startingY
+    ) {
+        for (int y = startingY; y < pixelSize + startingY; y++) {
+            for (int x = startingX; x < pixelSize + startingX; x++) {
+                imageBuilder.setRGB(x, y, color);
+            }
+        }
     }
 
 }
