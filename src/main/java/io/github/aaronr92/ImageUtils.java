@@ -98,8 +98,6 @@ public class ImageUtils {
             aY++;
         }
 
-        System.out.println("Pixel data: " + Arrays.toString(pixelData));
-
         return pixelData;
     }
 
