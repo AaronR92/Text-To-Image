@@ -58,7 +58,7 @@ public class StringUtils {
 
     public static String bitsToString(byte[] encodedText)
             throws UnsupportedEncodingException {
-        if (encodedText == null || encodedText.length % 8 != 1)
+        if (encodedText == null )
             throw new IllegalArgumentException("Invalid input bits");
 
         Charset encoding = getEncoding(encodedText[0]);
@@ -73,7 +73,12 @@ public class StringUtils {
             byte decodedByte = 0;
 
             for (int j = 0; j < charSize; j++) {
-                decodedByte |= (byte) (bits[i * charSize + j] << ((charSize - 1) - j));
+                byte bit = bits[i * charSize + j];
+
+                if (bit == 127)
+                    break;
+
+                decodedByte |= (byte) (bit << ((charSize - 1) - j));
             }
 
             decodedBytes[i] = decodedByte;
