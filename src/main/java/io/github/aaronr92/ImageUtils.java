@@ -25,13 +25,13 @@ public class ImageUtils {
 
     public static BufferedImage drawSquareImage(byte[] text, int pixelSize) {
         int sideSize = (int) (
-                Math.ceil(Math.sqrt(text.length)) * pixelSize
+                Math.ceil(Math.sqrt((double) text.length / 2)) * pixelSize
         );
 
         ImageBuilder imageBuilder = new ImageBuilder(
                 sideSize,
                 sideSize,
-                true
+                false
         );
 
         int i = 0;
@@ -39,9 +39,11 @@ public class ImageUtils {
         try {
             for (int y = 0; y < sideSize; y += pixelSize) {
                 for (int x = 0; x < sideSize; x += pixelSize) {
-                    int pixel = text[i] == 0 ? WHITE : BLACK;
+                    int pixel = getColor(text[i], text[i + 1]);
+
                     drawPixel(imageBuilder, pixel, pixelSize, x, y);
-                    i++;
+
+                    i += 2;
                 }
             }
         } catch (ArrayIndexOutOfBoundsException ignored) {}
@@ -73,9 +75,11 @@ public class ImageUtils {
         var image = parser.getBufferedImage(imageFile, new PngImagingParameters());
         int sideSize = image.getWidth();
 
-        int preciseSideSize = (int) Math.ceil(((double) sideSize / pixelSize));
+        int preciseSideSize = (int) Math.ceil(((double) sideSize / pixelSize)) * 2;
 
-        byte[] rawPixelData = new byte[preciseSideSize * preciseSideSize];
+        byte[] pixelData = new byte[
+                (int) (preciseSideSize * Math.ceil((double) preciseSideSize / 2))
+                ];
 
         int aY = 0;
 
@@ -84,21 +88,19 @@ public class ImageUtils {
             for (int x = 0; x < sideSize; x += pixelSize) {
                 int pixel = image.getRGB(x, y);
 
-                if (pixel == WHITE)
-                    rawPixelData[aY * preciseSideSize + aX] = 0;
-                else if (pixel == BLACK)
-                    rawPixelData[aY * preciseSideSize + aX] = 1;
-                else
-                    rawPixelData[aY * preciseSideSize + aX] = 127;
+                var bits = getBitsFromColor(pixel);
 
+                pixelData[aY * preciseSideSize + aX] = bits.a();
+                aX++;
+                pixelData[aY * preciseSideSize + aX] = bits.b();
                 aX++;
             }
             aY++;
         }
 
-        System.out.println(Arrays.toString(rawPixelData));
+        System.out.println("Pixel data: " + Arrays.toString(pixelData));
 
-        return rawPixelData;
+        return pixelData;
     }
 
     private static void drawPixel(
@@ -113,6 +115,36 @@ public class ImageUtils {
                 imageBuilder.setRGB(x, y, color);
             }
         }
+    }
+
+    private static int getColor(byte firstBit, byte secondBit) {
+        if (firstBit == 0 && secondBit == 0) {
+            return WHITE;
+        }
+        if (firstBit == 0 && secondBit == 1) {
+            return GREEN;
+        }
+        if (firstBit == 1 && secondBit == 0) {
+            return RED;
+        }
+        if (firstBit == 1 && secondBit == 1) {
+            return BLUE;
+        }
+
+        throw new IllegalArgumentException();
+    }
+
+    private static Pair<Byte, Byte> getBitsFromColor(int color) {
+        return switch (color) {
+            case WHITE -> Pair.of((byte) 0, (byte) 0);
+            case GREEN -> Pair.of((byte) 0, (byte) 1);
+            case RED -> Pair.of((byte) 1, (byte) 0);
+            case BLUE -> Pair.of((byte) 1, (byte) 1);
+            case BLACK -> Pair.of((byte) 127, (byte) 127);
+            default -> throw new IllegalArgumentException(
+                    String.format("Unsupported color [%d]", color)
+            );
+        };
     }
 
 }

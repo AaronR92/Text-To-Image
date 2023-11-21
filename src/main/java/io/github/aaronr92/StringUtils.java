@@ -47,11 +47,11 @@ public class StringUtils {
             }
         }
 
-        byte[] result = new byte[bits.length + 1];
+        byte[] result = new byte[bits.length + 2];
 
         result[0] = getCharsetDeterminant(charset);
 
-        System.arraycopy(bits, 0, result, 1, bits.length);
+        System.arraycopy(bits, 0, result, 2, bits.length);
 
         return result;
     }
@@ -64,8 +64,8 @@ public class StringUtils {
         Charset encoding = getEncoding(encodedText[0]);
         int charSize = getCharacterSize(encoding);
 
-        byte[] bits = new byte[encodedText.length - 1];
-        System.arraycopy(encodedText, 1, bits, 0, bits.length);
+        byte[] bits = new byte[encodedText.length - 2];
+        System.arraycopy(encodedText, 2, bits, 0, bits.length);
 
         byte[] decodedBytes = new byte[bits.length / 8];
 

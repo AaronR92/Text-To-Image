@@ -9,18 +9,20 @@ import java.util.Arrays;
 public class Main {
 
     public static void main(String[] args) throws IOException, ImageReadException {
-        var encoded = StringUtils.stringToBits("Мой самый секретный пароль: p4ssw@rd");
+        var encoded = StringUtils.stringToBits("Ultra secret password: p4ssw@rd");
+
+        System.out.println("Encoded: " + Arrays.toString(encoded));
 
         ImageUtils.saveImage(
                 ImageUtils.drawSquareImage(
                         encoded,
-                        2
+                        1
                 ),
                 "image.png"
         );
 
         var bytes = ImageUtils.readSquareImageData(
-                "D:\\All Projects\\Java\\TextToImage\\image.png", 2
+                "D:\\All Projects\\Java\\TextToImage\\image.png", 1
         );
 
         System.out.println(encoded.length);
